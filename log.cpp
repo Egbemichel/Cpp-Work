@@ -197,7 +197,7 @@ void verificationCode()
 
     srand(time(0));
 
-    for (int i; i <= 3; i++)
+    for (int i=0; i <= 3; i++)
     {
         cout << rand() % 10;
     }
