@@ -6,8 +6,15 @@
 
 using namespace std;
 
+/*Do Error handling to prevent two employees from having the same ID
+Work on an Edit and Delete function
+Add utility functions
+prevent hardcoding 
+*/
+
 // Employee structure to store employee information
-struct Employee {
+struct Employee
+{
     string name;
     int employeeId;
     double hourlyRate;
@@ -16,12 +23,14 @@ struct Employee {
 };
 
 // Function to calculate gross pay for an employee
-void calculateGrossPay(Employee& emp) {
+void calculateGrossPay(Employee &emp)
+{
     emp.grossPay = emp.hourlyRate * emp.hoursWorked;
 }
 
 // Function to display employee details
-void displayEmployeeDetails(const Employee& emp) {
+void displayEmployeeDetails(const Employee &emp)
+{
     cout << "Employee ID: " << emp.employeeId << endl;
     cout << "Name: " << emp.name << endl;
     cout << "Hourly Rate: $" << emp.hourlyRate << endl;
@@ -30,14 +39,17 @@ void displayEmployeeDetails(const Employee& emp) {
 }
 
 // Function to save employee records to a file
-void saveRecords(const vector<Employee>& employees) {
+void saveRecords(const vector<Employee> &employees)
+{
     ofstream outputFile("payroll.txt", ios::trunc); // Open file for writing (truncating existing content)
-    if (!outputFile.is_open()) {
+    if (!outputFile.is_open())
+    {
         cerr << "Error: Unable to open file for writing." << endl;
         return;
     }
 
-    for (const Employee& emp : employees) {
+    for (const Employee &emp : employees)
+    {
         outputFile << emp.employeeId << " " << emp.name << " " << emp.hourlyRate
                    << " " << emp.hoursWorked << " " << emp.grossPay << endl;
     }
@@ -47,16 +59,18 @@ void saveRecords(const vector<Employee>& employees) {
 }
 
 // Function to load employee records from a file
-void loadRecords(vector<Employee>& employees) {
+void loadRecords(vector<Employee> &employees)
+{
     ifstream inputFile("payroll.txt"); // Open file for reading
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         cerr << "Error: Unable to open file for reading." << endl;
         return;
     }
 
     Employee emp;
-    while (inputFile >> emp.employeeId >> emp.name >> emp.hourlyRate
-           >> emp.hoursWorked >> emp.grossPay) {
+    while (inputFile >> emp.employeeId >> emp.name >> emp.hourlyRate >> emp.hoursWorked >> emp.grossPay)
+    {
         employees.push_back(emp);
     }
 
@@ -64,7 +78,8 @@ void loadRecords(vector<Employee>& employees) {
     cout << "Employee records loaded from payroll.txt." << endl;
 }
 
-int main() {
+int main()
+{
     vector<Employee> employees;
 
     // Load existing records from file
@@ -72,7 +87,8 @@ int main() {
 
     // Menu loop
     char choice;
-    do {
+    do
+    {
         cout << "\nPayroll System Menu:\n";
         cout << "1. Add New Employee\n";
         cout << "2. Display Employee Details\n";
@@ -82,77 +98,86 @@ int main() {
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
-            case '1': // Add New Employee
-                {
-                    Employee newEmployee;
-                    cout << "Enter Employee ID: ";
-                    cin >> newEmployee.employeeId;
-                    cout << "Enter Name: ";
-                    cin.ignore();
-                    getline(cin, newEmployee.name);
-                    cout << "Enter Hourly Rate: $";
-                    cin >> newEmployee.hourlyRate;
-                    cout << "Enter Hours Worked: ";
-                    cin >> newEmployee.hoursWorked;
+        switch (choice)
+        {
+        case '1': // Add New Employee
+        {
+            Employee newEmployee;
+            cout << "Enter Employee ID: ";
+            cin >> newEmployee.employeeId;
+            cout << "Enter Name: ";
+            cin.ignore();
+            getline(cin, newEmployee.name);
+            cout << "Enter Hourly Rate: $";
+            cin >> newEmployee.hourlyRate;
+            cout << "Enter Hours Worked: ";
+            cin >> newEmployee.hoursWorked;
 
-                    // Calculate Gross Pay
-                    calculateGrossPay(newEmployee);
+            // Calculate Gross Pay
+            calculateGrossPay(newEmployee);
 
-                    // Add new employee to the vector
-                    employees.push_back(newEmployee);
+            // Add new employee to the vector
+            employees.push_back(newEmployee);
 
-                    cout << "Employee added successfully." << endl;
-                }
-                break;
+            cout << "Employee added successfully." << endl;
+        }
+        break;
 
-            case '2': // Display Employee Details
-                {
-                    int empId;
-                    cout << "Enter Employee ID: ";
-                    cin >> empId;
+        case '2': // Display Employee Details
+        {
+            int empId;
+            cout << "Enter Employee ID: ";
+            cin >> empId;
 
-                    // Find the employee with the given ID
-                    auto it = find_if(employees.begin(), employees.end(),
-                                      [empId](const Employee& emp) { return emp.employeeId == empId; });
+            // Find the employee with the given ID
+            auto it = find_if(employees.begin(), employees.end(),
+                              [empId](const Employee &emp)
+                              { return emp.employeeId == empId; });
 
-                    if (it != employees.end()) {
-                        displayEmployeeDetails(*it);
-                    } else {
-                        cout << "Employee not found." << endl;
-                    }
-                }
-                break;
+            if (it != employees.end())
+            {
+                displayEmployeeDetails(*it);
+            }
+            else
+            {
+                cout << "Employee not found." << endl;
+            }
+        }
+        break;
 
-            case '3': // Calculate Gross Pay
-                {
-                    int empId;
-                    cout << "Enter Employee ID: ";
-                    cin >> empId;
+        case '3': // Calculate Gross Pay
+        {
+            int empId;
+            cout << "Enter Employee ID: ";
+            cin >> empId;
 
-                    // Find the employee with the given ID
-                    auto it = find_if(employees.begin(), employees.end(),
-                                      [empId](const Employee& emp) { return emp.employeeId == empId; });
+            // Find the employee with the given ID
+            auto it = find_if(employees.begin(), employees.end(),
+                              [empId](const Employee &emp)
+                              { return emp.employeeId == empId; });
 
-                    if (it != employees.end()) {
-                        calculateGrossPay(*it);
-                        cout << "Gross Pay calculated successfully." << endl;
-                    } else {
-                        cout << "Employee not found." << endl;
-                    }
-                }
-                break;
+            if (it != employees.end())
+            {
+                calculateGrossPay(*it);
+                cout << "Gross Pay calculated successfully." << endl;
+            }
+            else
+            {
+                cout << "Employee not found." << endl;
+            }
+        }
+        break;
 
-            case '4': // Save Records to File
-                saveRecords(employees);
-                break;
+        case '4': // Save Records to File
+            saveRecords(employees);
+            break;
 
-            case '5': // Exit
-                cout << "Exiting the Payroll System." << endl;
-                break;
+        case '5': // Exit
+            cout << "Exiting the Payroll System." << endl;
+            break;
 
-            default:
-                cout << "Invalid choice. Please try again." << endl;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
         }
     } while (choice != '5');
 

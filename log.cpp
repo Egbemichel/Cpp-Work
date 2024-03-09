@@ -192,7 +192,7 @@ void verificationCode()
 {
     int code;
 
-    cout << "We have sent a verification code to your. Please check your Email" << endl;
+    cout << "We have sent a verification code to your Email. Please check your Email" << endl;
     cout << "Email message: Your Verification code is ";
 
     srand(time(0));
