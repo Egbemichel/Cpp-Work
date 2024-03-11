@@ -287,7 +287,7 @@ void admin::searchCustomer(string pname)
 
     for (i = 0; i < roomCount; i++)
     {
-        Convert the customer name to lowercase for case-insensitive comparison
+        // Convert the customer name to lowercase for case-insensitive comparison
         string custNameLower = rooms[i].cust.name;
         transform(custNameLower.begin(), custNameLower.end(), custNameLower.begin(), ::tolower);
 
@@ -415,7 +415,7 @@ int main()
 {
     class admin man;
     int op;
-    char pname[100];
+    string pname;
     int rno;
 
     do
@@ -465,8 +465,9 @@ int main()
             }
             else
             {
+                clearInputBuffer(); // Clear input buffer before reading the customer name
                 cout << "Enter Customer Name: ";
-                cin >> pname;
+                getline(cin, pname); // Use getline to read the entire line
                 man.searchCustomer(pname);
             }
             break;
