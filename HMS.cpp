@@ -5,15 +5,11 @@
 #include <string>
 #include <algorithm>
 
-/*Make inputs case insensitive
-fix getting multiple names seperated by spaces
-Add a dummy bank transaction functionality
-Add a funtion to convert currency: Hotel has a standard currency that they convert customer currencies to and both are display on the checkout()
-Add an Edit and Delete functions*/
-
 using namespace std;
+// maximim number of rooms
 const int MAX_ROOMS = 100;
 
+// class Customer with all the customer objects
 class Customer
 {
 public:
@@ -26,7 +22,7 @@ public:
     int booking_id;
     string currency;
 };
-
+// room class with all the rooms classes
 class Room
 {
 public:
@@ -41,13 +37,13 @@ public:
     class Customer cust;
     class Room addRoom(int);
     void searchRoom(int);
-    // void deleteRoom(int);
     void displayRoom(Room);
 };
+// Global variable decleraion(not a good practice)
 class Room rooms[MAX_ROOMS];
 int roomCount = 0;
-int checkInCount = 0;
 
+// admin class inheriting from room class
 class admin : protected Room
 {
 public:
@@ -58,7 +54,7 @@ public:
     void checkoutInfo();
     void manageRooms();
 };
-
+// utility function declarations to clear buffer and display headers
 void clearInputBuffer();
 void displayHeader(const string &);
 
@@ -66,7 +62,7 @@ Room Room::addRoom(int rno)
 {
     class Room room;
     room.roomNumber = rno;
-
+    // Error handling i.e while()
     while (true)
     {
         cout << "\nType AC (Y/N): ";
@@ -169,7 +165,7 @@ void Room::displayRoom(Room tempRoom)
 
 void admin::checkoutInfo()
 {
-    if (roomCount == 0 || checkInCount == 0)
+    if (roomCount == 0)
     {
         cout << "No Guest in Hotel";
     }
@@ -219,13 +215,13 @@ void admin::checkIn()
             }
             clearInputBuffer();
             cout << "\nEnter Customer Name: ";
-            getline(cin, rooms[i].cust.name);
-            transform(rooms[i].cust.name.begin(), rooms[i].cust.name.end(), rooms[i].cust.name.begin(), ::tolower);
+            getline(cin, rooms[i].cust.name);                                                                       // gets a line of characters including spaces
+            transform(rooms[i].cust.name.begin(), rooms[i].cust.name.end(), rooms[i].cust.name.begin(), ::tolower); // converts the input to lowercase to ease searchCustomer function
             clearInputBuffer();
 
             cout << "\nEnter Address: ";
-            getline(cin, rooms[i].cust.address);
-            transform(rooms[i].cust.address.begin(), rooms[i].cust.address.end(), rooms[i].cust.address.begin(), ::tolower);
+            getline(cin, rooms[i].cust.address);                                                                             // gets a line of characters including spaces
+            transform(rooms[i].cust.address.begin(), rooms[i].cust.address.end(), rooms[i].cust.address.begin(), ::tolower); ////converts the input to lowercase to ease searchCustomer function
 
             cout << "\nEnter Phone: ";
             cin >> rooms[i].cust.phone;
@@ -235,7 +231,7 @@ void admin::checkIn()
 
             cout << "\n Enter To Date: ";
             cin >> rooms[i].cust.to_date;
-
+            // Error handling
             while (true)
             {
                 cout << "Enter Advanced Payment: ";
@@ -258,7 +254,6 @@ void admin::checkIn()
             cout << "Customer Checked-in Successfully..";
         }
     }
-    checkInCount = 1;
 }
 
 void admin::AvailRoom()
