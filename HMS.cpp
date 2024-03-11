@@ -1,6 +1,9 @@
 #include <iostream>
+#include <cctype>
 #include <cstring>
 #include <limits>
+#include <string>
+#include <algorithm>
 
 /*Make inputs case insensitive
 fix getting multiple names seperated by spaces
@@ -14,8 +17,8 @@ const int MAX_ROOMS = 100;
 class Customer
 {
 public:
-    char name[100];
-    char address[100];
+    string name;
+    string address;
     char phone[12];
     char from_date[20];
     char to_date[20];
@@ -42,13 +45,14 @@ public:
     void displayRoom(Room);
 };
 class Room rooms[MAX_ROOMS];
-int count = 0;
+int roomCount = 0;
+int checkInCount = 0;
 
 class admin : protected Room
 {
 public:
     void checkIn();
-    void searchCustomer(char *);
+    void searchCustomer(string);
     void AvailRoom();
     void checkOut(int);
     void checkoutInfo();
@@ -63,19 +67,51 @@ Room Room::addRoom(int rno)
     class Room room;
     room.roomNumber = rno;
 
-    cout << "\nType AC (Y/N): ";
-    cin >> room.ac;
-    clearInputBuffer();
-
-    cout << "\n Type pool (Y/N): ";
-    cin >> room.pool;
-
-    cout << "\n Type Candy Bar (Y/N): ";
-    cin >> room.canBar;
+    while (true)
+    {
+        cout << "\nType AC (Y/N): ";
+        if (!(cin >> room.ac) || (room.ac != 'Y' && room.ac != 'y' && room.ac != 'N' && room.ac != 'n'))
+        {
+            cout << "Invalid input, please try again";
+            clearInputBuffer();
+        }
+        else
+        {
+            break;
+        }
+    }
 
     while (true)
     {
-        cout << "\n Daily rent: ";
+        cout << "\nType pool (Y/N): ";
+        if (!(cin >> room.pool) || (room.pool != 'Y' && room.pool != 'y' && room.pool != 'N' && room.pool != 'n'))
+        {
+            cout << "Invalid input, please try again";
+            clearInputBuffer();
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    while (true)
+    {
+        cout << "\nType Candy Bar (Y/N): ";
+        if (!(cin >> room.canBar) || (room.canBar != 'Y' && room.canBar != 'y' && room.canBar != 'N' && room.canBar != 'n'))
+        {
+            cout << "Invalid input, please try again";
+            clearInputBuffer();
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    while (true)
+    {
+        cout << "\nDaily rent: ";
         if (!(cin >> room.rent) || room.rent <= 0)
         {
             cout << "Invalid input. Please enter a valid rent.\n";
@@ -86,12 +122,12 @@ Room Room::addRoom(int rno)
             break;
         }
     }
-
     cout << "\nEnter Currency you would like to use to make payments (e.g., USD, EUR): ";
     cin >> room.currency;
     room.status = 0;
 
     cout << "Room Added Successfully";
+
     return room;
 }
 
@@ -99,7 +135,7 @@ void Room::searchRoom(int rno)
 {
 
     int i, found = 0;
-    for (i = 0; i < count; i++)
+    for (i = 0; i < roomCount; i++)
     {
         if (rooms[i].roomNumber == rno)
         {
@@ -133,11 +169,11 @@ void Room::displayRoom(Room tempRoom)
 
 void admin::checkoutInfo()
 {
-    if (count == 0)
+    if (roomCount == 0 || checkInCount == 0)
     {
         cout << "No Guest in Hotel";
     }
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < roomCount; i++)
     {
         if (rooms[i].status == 1)
         {
@@ -153,12 +189,11 @@ void admin::checkoutInfo()
 void admin::checkIn()
 {
     int i, found = 0, rno;
-
     class Room room;
     cout << "Enter Room number: ";
     cin >> rno;
 
-    for (i = 0; i < count; i++)
+    for (i = 0; i < roomCount; i++)
     {
         if (rooms[i].roomNumber == rno)
         {
@@ -182,13 +217,15 @@ void admin::checkIn()
                     break;
                 }
             }
-
+            clearInputBuffer();
             cout << "\nEnter Customer Name: ";
-            cin >> rooms[i].cust.name;
+            getline(cin, rooms[i].cust.name);
+            transform(rooms[i].cust.name.begin(), rooms[i].cust.name.end(), rooms[i].cust.name.begin(), ::tolower);
             clearInputBuffer();
 
             cout << "\nEnter Address: ";
-            cin >> rooms[i].cust.address;
+            getline(cin, rooms[i].cust.address);
+            transform(rooms[i].cust.address.begin(), rooms[i].cust.address.end(), rooms[i].cust.address.begin(), ::tolower);
 
             cout << "\nEnter Phone: ";
             cin >> rooms[i].cust.phone;
@@ -202,7 +239,7 @@ void admin::checkIn()
             while (true)
             {
                 cout << "Enter Advanced Payment: ";
-                if (!(cin >> rooms[i].cust.payment_advance) || rooms[i].cust.payment_advance < 0)
+                if (!(cin >> rooms[i].cust.payment_advance) || rooms[i].cust.payment_advance <= 0)
                 {
                     cout << "Invalid input. Please enter a valid advanced payment.\n";
                     clearInputBuffer();
@@ -221,12 +258,13 @@ void admin::checkIn()
             cout << "Customer Checked-in Successfully..";
         }
     }
+    checkInCount = 1;
 }
 
 void admin::AvailRoom()
 {
     int i, found = 0;
-    for (i = 0; i < count; i++)
+    for (i = 0; i < roomCount; i++)
     {
         if (rooms[i].status == 0)
         {
@@ -240,12 +278,20 @@ void admin::AvailRoom()
     }
 }
 
-void admin::searchCustomer(char *pname)
+void admin::searchCustomer(string pname)
 {
     int i, found = 0;
-    for (i = 0; i < count; i++)
+
+    // Convert pname to lowercase for case-insensitive comparison
+    transform(pname.begin(), pname.end(), pname.begin(), ::tolower);
+
+    for (i = 0; i < roomCount; i++)
     {
-        if (rooms[i].status == 1 && strcmp(rooms[i].cust.name, pname) == 0)
+        Convert the customer name to lowercase for case-insensitive comparison
+        string custNameLower = rooms[i].cust.name;
+        transform(custNameLower.begin(), custNameLower.end(), custNameLower.begin(), ::tolower);
+
+        if (rooms[i].status == 1 && custNameLower == pname)
         {
             cout << "\nCustomer Name: \t" << rooms[i].cust.name;
             cout << "\nRoom Number: \t" << rooms[i].roomNumber;
@@ -262,11 +308,21 @@ void admin::checkOut(int roomNum)
 {
     int i, found = 0, days, rno;
     float billAmt = 0;
-    for (i = 0; i < count; i++)
+    for (i = 0; i < roomCount; i++)
     {
         if (rooms[i].status == 1 && rooms[i].roomNumber == roomNum)
         {
             found = 1;
+            break;
+        }
+        else if (rooms[i].status == 0)
+        {
+            cout << "Room is Empty, Check-in someone First ";
+            break;
+        }
+        else if (rooms[i].roomNumber != roomNum)
+        {
+            cout << "Room Number NOT Found";
             break;
         }
     }
@@ -309,11 +365,11 @@ void admin::manageRooms()
             cout << "\nEnter Room Number: ";
             cin >> rno;
             pro = 0;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < roomCount; i++)
             {
                 if (rooms[i].roomNumber == rno)
                 {
-                    pro = 1;//checks if the room with that room number already exists
+                    pro = 1; // checks if the room with that room number already exists
                     break;
                 }
             }
@@ -323,8 +379,8 @@ void admin::manageRooms()
             }
             else
             {
-                rooms[count] = rooms[count].addRoom(rno);
-                count++;
+                rooms[roomCount] = rooms[roomCount].addRoom(rno);
+                roomCount++;
             }
             break;
 
@@ -382,7 +438,7 @@ int main()
             break;
 
         case 2:
-            if (count == 0)
+            if (roomCount == 0)
             {
                 cout << "\nRoom data is NOT Available.\n Please add the rooms first.";
             }
@@ -393,7 +449,7 @@ int main()
             break;
 
         case 3:
-            if (count == 0)
+            if (roomCount == 0)
             {
                 cout << "\nRooms data is NOT available.\nPlease add the rooms first";
             }
@@ -403,7 +459,7 @@ int main()
                 break;
             }
         case 4:
-            if (count == 0)
+            if (roomCount == 0)
             {
                 cout << "\nRooms data is NOT available.\nPlease add the rooms first";
             }
@@ -416,7 +472,7 @@ int main()
             break;
 
         case 5:
-            if (count == 0)
+            if (roomCount == 0)
             {
                 cout << "\nRooms are NOT available.\nPlease add the rooms first";
             }
